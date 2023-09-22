@@ -6,7 +6,8 @@
 
 import time
 import psycopg2
-import requests
+import scrapy
+from scrapy.crawler import CrawlerProcess
 
 from dataEnums import LIMIT_RETRIES, DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME, DELETE_Q, SCRAP_SRC, SCRAP_DEPTH, \
     INSERT_Q
@@ -24,10 +25,10 @@ class EstateClass:
         self.url = url
 
     @staticmethod
-    def item_list(data: list) -> list:
+    def item_list(data: list) -> [None, list]:
         """
         Get serialized data from BD
-        :param data:
+        :param data: list
         :return: array of class EstateClass
         """
         try:
@@ -56,7 +57,7 @@ class DBConnector():
     def connect(self, retry_counter: int = 0) -> [None, list]:
         """
         Function that implements the connection to db with retry_counter
-        :param retry_counter:
+        :param retry_counter: int
         :return: [None,list]
         """
         if not self._connection:
@@ -109,6 +110,8 @@ class DBConnector():
                 self.execute(query, retry_counter)
         except (Exception, psycopg2.Error) as error:
             raise error
+
+        # return data only if SELECT query
         if 'SELECT' in query:
             return EstateClass.item_list(self._cursor.fetchall())
 
@@ -144,21 +147,51 @@ class DBConnector():
         Scrap data from url and store it to the db
         :return: None
         """
+        # delete all data from table
         self.execute(DELETE_Q, LIMIT_RETRIES)
 
-        response = requests.get(SCRAP_SRC.format(SCRAP_DEPTH))
-        response_json = response.json()
-        if not response_json:
-            return
-
-        for item in response_json["_embedded"]["estates"]:
-            title = item['name']
-            url = ''
-            for link in item['_links']['images']:
-                url = link['href']
-                break
-            self.execute(INSERT_Q.format(title, url), LIMIT_RETRIES)
+        # init Scrapy
+        process = CrawlerProcess({
+            'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+        })
+        process.crawl(SRealitySpider)
+        # run Scrapy programmatically instead of using cmd
+        process.start()
 
 
 # Declare variable of class DBConnector
 db_instance = DBConnector(user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT, database=DB_NAME, reconnect=True)
+
+
+class SRealitySpider(scrapy.Spider):
+    """
+    Scrapy class, using for retrieve and parse information from web server
+    """
+    name = 'srealityspider'
+    # initial url w`ll retrieve after Class initialisation
+    start_urls = [SCRAP_SRC.format(SCRAP_DEPTH)]
+
+    def parse(self, response):
+        """
+        Override Class method for parsing data from server.
+        :param response:
+        """
+        # convert response to JSON
+        data = response.json()
+
+        # View data and save it to the database. Data stored in object ["_embedded"]["estates"]
+        for item in data["_embedded"]["estates"]:
+
+            # get name from current element
+            title = item['name']
+            url = ''
+
+            # Get first url to image
+            for link in item['_links']['images']:
+                url = link['href']
+
+                # stop looping after first run
+                break
+
+            # store data to DB
+            db_instance.execute(INSERT_Q.format(title, url), LIMIT_RETRIES)

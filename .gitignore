@@ -1,0 +1,6 @@
+venv/*
+.vscode/settings.json
+/.idea
+__pycache__
+.idea
+/*.log

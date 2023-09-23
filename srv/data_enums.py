@@ -1,17 +1,19 @@
 #  -*- coding: utf-8 -*-
-""" Project: srv | File: dataEnums.py | Created: 9/22/23, 7:21 PM"""
+""" Project: srv | File: data_enums.py | Created: 9/22/23, 7:21 PM"""
 #  Created by Dmytro Chernousan
 #  email: Chernousan@gmail.com
 #  Copyright (c) 2023
 
 # List of enums used in application
-
 # Postgres constant
 DB_NAME = 'database'
 DB_USER = 'username'
 DB_PASS = 'secret'
 DB_HOST = 'db'
 DB_PORT = '5432'
+
+# Http server cfg
+SRV_PORT = 8000
 
 # Limits of retry connection to DB. Used when Db container started lately srv container.
 # Can be increased in case DB container has long time to start
@@ -23,7 +25,8 @@ SELECT_Q = "SELECT * FROM estate"
 INSERT_Q = "INSERT INTO estate (title, url) VALUES ( '{0}', '{1}');"
 
 # Templates for create HTML
-DOC_TEMPLATE = '''<!DOCTYPE html><html><body><table style="width:100%">{table}</table></body></html>'''
+DOC_TEMPLATE = '''<!DOCTYPE html><html><body>
+<table style="width:100%">{table}</table></body></html>'''
 TABLE_TEMPLATE = '<tr><td>{index}</td><td>{title}</td><td><img src="{url}"></img></td></tr>'
 
 # Scrapy variables.
@@ -31,4 +34,5 @@ TABLE_TEMPLATE = '<tr><td>{index}</td><td>{title}</td><td><img src="{url}"></img
 # creates a harmful load on the server with the original data
 SCRAP_DEPTH = 500
 # Source server API
-SCRAP_SRC = 'https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_type_cb=1&page=1&per_page={0}'
+SCRAP_SRC = 'https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&' \
+            'category_type_cb=1&page=1&per_page={0}'

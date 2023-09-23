@@ -24,5 +24,4 @@ jobs:
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
         pylint -d E0401 $(git ls-files '*.py')

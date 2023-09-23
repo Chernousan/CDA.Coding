@@ -19,8 +19,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
     - name: Install project dependencies
-        working-directory: ./srv
-        run: |
+      working-directory: ./srv
+      run: |
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       working-directory: ./srv

@@ -7,3 +7,8 @@ Features:
 - pack all to the docker
 - switched to using Scrapy for obtaining and parsing information from server
 - added an index field to the HTML table
+- add github pylint
+- final refactoring
+
+Bug:
+- fixed address from 8000 to 8080

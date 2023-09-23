@@ -1,11 +1,34 @@
-# Coding.
+# SReality
 
-Demo data https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_type_cb=1&page=1&per_page=500
+Coding.
 
-Get code:
+##Requirements:
+- Use scrapy framework to scrape the first 500 items (title, image url) from [sreality.cz](https://sreality.cz)
+- Save result in the Postgresql database. 
+- Implement a simple HTTP server in python and show these 500 items on a simple page (title and image). 
+- Deploy project with command docker-compose up.
+- Show result in browser http://127.0.0.1:8080.
+
+
+## Installation
+Clone project: 
+
+```
 git clone https://github.com/Chernousan/CDA.Coding.git
+```
+Run in project folder: 
 
-Start application: 
+```
 docker-compose up
+```
 
-Created by Dmytro Chernousan 9_22_23
+## Usage
+Open link in browser:
+
+
+[http://127.0.0.1:8080](http://127.0.0.1:8080)
+
+
+
+## 
+######Created by Dmytro Chernousan 9_22_23

@@ -1,14 +1,13 @@
 #  -*- coding: utf-8 -*-
-""" Project: srv | File: srv.py | Created: 9/22/23, 7:21 PM"""
+""" Project: srv | File: http_srv.py | Created: 9/24/23, 1:01 AM"""
 #  Created by Dmytro Chernousan
 #  email: Chernousan@gmail.com
 #  Copyright (c) 2023
 
 import sys
-import socketserver
 from http.server import SimpleHTTPRequestHandler
-from srv.data_class import db_instance
-from srv.data_enums import TABLE_TEMPLATE, SELECT_Q, LIMIT_RETRIES, SRV_PORT
+from srv.data import db_instance
+from srv.enums import TABLE_TEMPLATE, SELECT_Q, LIMIT_RETRIES
 
 
 class HttpServer(SimpleHTTPRequestHandler):
@@ -54,16 +53,3 @@ class HttpServer(SimpleHTTPRequestHandler):
                   *table, '</table></body></html>']
 
         return '\n'.join(result).encode(enc)
-
-
-if __name__ == '__main__':
-    print('Application started. Wait for the data to load.')
-
-    # retrieve data form server
-    db_instance.refresh()
-    print('Data reloaded')
-
-    # start http server
-    httpd = socketserver.TCPServer(("", SRV_PORT), HttpServer)
-    print('Serving on http://localhost:8000')
-    httpd.serve_forever()

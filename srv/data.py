@@ -1,19 +1,14 @@
 #  -*- coding: utf-8 -*-
-""" Project: srv | File: dataClasse.py | Created: 9/22/23, 7:21 PM"""
+""" Project: srv | File: data.py | Created: 9/22/23, 7:21 PM"""
 #  Created by Dmytro Chernousan
 #  email: Chernousan@gmail.com
 #  Copyright (c) 2023
 
 import dataclasses
-import json
 import time
 from typing import Any
 import psycopg2
-import scrapy
-from scrapy.crawler import CrawlerProcess
-from scrapy.http import Response
-from srv.data_enums import LIMIT_RETRIES, DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME, DELETE_Q, \
-    SCRAP_SRC, SCRAP_DEPTH, INSERT_Q
+from srv.enums import LIMIT_RETRIES, DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME, DELETE_Q
 
 
 @dataclasses.dataclass
@@ -37,6 +32,13 @@ class DBConnector:
         self._cursor = None
         self.reconnect = True
         self.init()
+
+    def init(self):
+        """
+        initialization Class
+        """
+        self.connect()
+        self.cursor()
 
     def connect(self, retry_counter: int = 0) -> [None, list]:
         """
@@ -130,63 +132,13 @@ class DBConnector:
         self._connection = None
         self._cursor = None
 
-    def init(self):
+    def clean(self):
         """
-        initialization Class
-        """
-        self.connect()
-        self.cursor()
-
-    def refresh(self):
-        """
-        Scrap data from url and store it to the db
-        :return: None
+        Delete all data from db
         """
         # delete all data from table
         self.execute(DELETE_Q, LIMIT_RETRIES)
 
-        # init Scrapy
-        process = CrawlerProcess({
-            'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
-        })
-        process.crawl(SRealitySpider)
-        # run Scrapy programmatically instead of using cmd
-        process.start()
-
 
 # Declare variable of class DBConnector
 db_instance = DBConnector()
-
-
-class SRealitySpider(scrapy.Spider):
-    """
-    Scrapy class, using for retrieve and parse information from web server
-    """
-    name = 'srealityspider'
-    # initial url w`ll retrieve after Class initialisation
-    start_urls = [SCRAP_SRC.format(SCRAP_DEPTH)]
-
-    def parse(self, response: Response, **kwargs: Any) -> Any:
-        """
-        Override Class method for parsing data from server.
-        :param response:
-        """
-
-        # convert response to JSON
-        data = json.loads(response.text)
-
-        # View data and save it to the database. Data stored in object ["_embedded"]["estates"]
-        for item in data["_embedded"]["estates"]:
-
-            # get name from current element
-            title = item['name']
-
-            # Get first url to image
-            url = ''
-            for link in item['_links']['images']:
-                url = link['href']
-                # stop looping after first element founded
-                break
-
-            # store data to DB
-            db_instance.execute(INSERT_Q.format(title, url), LIMIT_RETRIES)

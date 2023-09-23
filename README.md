@@ -2,7 +2,7 @@
 
 Coding.
 
-##Requirements:
+## Requirements:
 - Use scrapy framework to scrape the first 500 items (title, image url) from [sreality.cz](https://sreality.cz)
 - Save result in the Postgresql database. 
 - Implement a simple HTTP server in python and show these 500 items on a simple page (title and image). 
@@ -31,4 +31,4 @@ Open link in browser:
 
 
 ## 
-######Created by Dmytro Chernousan 9_22_23
+###### Created by Dmytro Chernousan 9_22_23

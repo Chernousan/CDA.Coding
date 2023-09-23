@@ -23,6 +23,6 @@ jobs:
       run: |
         pip install -r requirements.txt
     - name: Analysing the code with pylint
-      working-directory: ./srv
       run: |
+        echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
         pylint $(git ls-files '*.py')

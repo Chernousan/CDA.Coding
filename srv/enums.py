@@ -9,7 +9,7 @@
 DB_NAME = 'database'
 DB_USER = 'username'
 DB_PASS = 'secret'
-DB_HOST = 'localhost'
+DB_HOST = 'db'
 DB_PORT = '5432'
 
 # Http server cfg

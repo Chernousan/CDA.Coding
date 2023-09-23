@@ -4,6 +4,7 @@
 #  email: Chernousan@gmail.com
 #  Copyright (c) 2023
 
+import dataclasses
 import json
 import time
 from typing import Any
@@ -15,27 +16,13 @@ from srv.data_enums import LIMIT_RETRIES, DB_USER, DB_PASS, DB_HOST, DB_PORT, DB
     SCRAP_SRC, SCRAP_DEPTH, INSERT_Q
 
 
+@dataclasses.dataclass
 class EstateClass:
     """
     Helper class for data serialization
     """
-
-    def __init__(self, title, url):
-        self.title = title
-        self.url = url
-
-    @staticmethod
-    def item_list(data: list) -> [None, list]:
-        """
-        Get serialized data from BD
-        :param data: list
-        :return: array of class EstateClass
-        """
-        try:
-            return map(lambda i: EstateClass(*i), data) if data else []
-        except Exception as error:
-            print(str(error))
-            return []
+    title: str
+    url: str
 
 
 class DBConnector:
@@ -71,7 +58,7 @@ class DBConnector:
                     raise error
 
                 retry_counter += 1
-                print("got error {}. reconnecting {}".format(str(error).strip(), retry_counter))
+                print(f"got error {str(error).strip()}. reconnecting {retry_counter}")
                 time.sleep(5)
                 self.connect(retry_counter)
 
@@ -107,19 +94,19 @@ class DBConnector:
         except (psycopg2.DatabaseError, psycopg2.OperationalError) as error:
             if retry_counter >= LIMIT_RETRIES:
                 raise error
-            else:
-                retry_counter += 1
-                print("got error {}. retrying {}".format(str(error).strip(), retry_counter))
-                time.sleep(1)
-                self.reset()
-                self.execute(query, retry_counter)
+
+            retry_counter += 1
+            print(f"got error {str(error).strip()}. retrying {retry_counter}")
+            time.sleep(1)
+            self.reset()
+            self.execute(query, retry_counter)
 
         except (Exception, psycopg2.Error) as error:
             raise error
 
         # return data only if SELECT query
         if 'SELECT' in query:
-            return EstateClass.item_list(self._cursor.fetchall())
+            return map(lambda i: EstateClass(*i), self._cursor.fetchall())
 
         return None
 

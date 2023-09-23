@@ -25,4 +25,5 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
+        print($GITHUB_PATH)
         pylint $(git ls-files '*.py')

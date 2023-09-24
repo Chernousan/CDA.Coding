@@ -14,12 +14,14 @@ from srv.http_srv import HttpServer
 if __name__ == '__main__':
     print('Application started. Wait for the data to load.')
 
-    # retrieve data form server
-    db_instance.clean()
+    # Cleaning the database
+    db_instance.delete()
+
+    # Receiving data from the server
     spider_run()
     print('Data reloaded')
 
-    # start http server
+    # Starting the http server
     httpd = socketserver.TCPServer(("", SRV_PORT), HttpServer)
     print(f'Serving on http://localhost:{SRV_PORT}')
     httpd.serve_forever()

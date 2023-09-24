@@ -8,32 +8,31 @@ import json
 from typing import Any
 import scrapy
 from scrapy.http import Response
-from srv.data import db_instance
-from srv.enums import LIMIT_RETRIES, SCRAP_SRC, SCRAP_DEPTH, INSERT_Q
+from srv.data import EstateClass
+from srv.enums import SCRAP_SRC, SCRAP_DEPTH
 
 
 class ScrapSpider(scrapy.Spider):
     """
-    Scrapy class, using for retrieve and parse information from web server
+    A Scrapy class used to retrieve information from a web server
     """
     name = 'srealityspider'
-    # initial url w`ll retrieve after Class initialisation
+
+    # Source data url
     start_urls = [SCRAP_SRC.format(SCRAP_DEPTH)]
+
+    # Items post processing
+    custom_settings = {'ITEM_PIPELINES': {'srv.pipeline.ItemProcessing': SCRAP_DEPTH}}
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
         """
-        Override Class method for parsing data from server.
-        :param response:
+        The method returns a data generator
+        :param response: Any
         """
 
-        # convert response to JSON
+        # Converting the response to JSON
         data = json.loads(response.text)
 
-        # View data and save it to the database. Data stored in object ["_embedded"]["estates"]
+        # Crete generator
         for item in data["_embedded"]["estates"]:
-            # get name from current element
-            title = item['name']
-            # Get first url to image
-            url = item['_links']['images'][0]['href']
-            # store data to DB
-            db_instance.execute(INSERT_Q.format(title, url), LIMIT_RETRIES)
+            yield EstateClass(item['name'], item['_links']['images'][0]['href'])

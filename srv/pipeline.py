@@ -4,11 +4,12 @@
 #  email: Chernousan@gmail.com
 #  Copyright (c) 2023
 
+from dataclasses import dataclass
 from typing import Any
-from itemadapter import ItemAdapter
 from srv.data import db_instance
 
 
+@dataclass
 class ItemProcessing:
     """
     Scrapy class, using for retrieve and parse information from web server
@@ -21,6 +22,5 @@ class ItemProcessing:
         :param _: not used parameter
         :return: item after processing
         """
-        adapter = ItemAdapter(item)
         db_instance.insert(item)
         return item

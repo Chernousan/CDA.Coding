@@ -7,7 +7,7 @@
 import sys
 from http.server import SimpleHTTPRequestHandler
 from srv.data import db_instance
-from srv.enums import TABLE_TEMPLATE, SELECT_Q, LIMIT_RETRIES
+from srv.enums import TABLE_TEMPLATE, FINISH_TEMPLATE, START_TEMPLATE
 
 
 class HttpServer(SimpleHTTPRequestHandler):
@@ -22,7 +22,8 @@ class HttpServer(SimpleHTTPRequestHandler):
         # get encoding
         enc = sys.getfilesystemencoding()
 
-        response = db_instance.execute(SELECT_Q, LIMIT_RETRIES)
+        response = db_instance.select()
+
         html_file = self.get_html(response, enc)
 
         # Prepare response
@@ -48,8 +49,6 @@ class HttpServer(SimpleHTTPRequestHandler):
             table.append(TABLE_TEMPLATE.format(index=idx, title=item.title, url=item.url))
             idx += 1
 
-        result = ['<html><head><meta http-equiv="Content-Type" content="text/html; ',
-                  f'charset={enc}</head><body>"><table style="width:100%">',
-                  *table, '</table></body></html>']
+        result = [START_TEMPLATE.format(enc), *table, FINISH_TEMPLATE]
 
         return '\n'.join(result).encode(enc)

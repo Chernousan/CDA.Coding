@@ -8,7 +8,8 @@ import dataclasses
 import time
 from typing import Any
 import psycopg2
-from srv.enums import LIMIT_RETRIES, DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME, DELETE_Q
+from srv.enums import LIMIT_RETRIES, DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME, DELETE_Q, \
+    SELECT_Q, INSERT_Q
 
 
 @dataclasses.dataclass
@@ -71,7 +72,7 @@ class DBConnector:
 
     def cursor(self) -> [Any, None]:
         """
-        Return cursor fot db
+        Returns the cursor for db
         :return: cursor, None
         """
         if not self._cursor or self._cursor.closed:
@@ -84,7 +85,7 @@ class DBConnector:
 
     def execute(self, query: str, retry_counter: int = 0) -> [None, list]:
         """
-        Return data frm db
+        Executing a database query.
         :param query: str
         :param retry_counter: count of reconnect
         :return: None, list
@@ -132,12 +133,25 @@ class DBConnector:
         self._connection = None
         self._cursor = None
 
-    def clean(self):
+    def delete(self):
         """
         Delete all data from db
         """
         # delete all data from table
         self.execute(DELETE_Q, LIMIT_RETRIES)
+
+    def select(self) -> Any:
+        """
+        Get data from db
+        """
+        return self.execute(SELECT_Q, LIMIT_RETRIES)
+
+    def insert(self, item: Any):
+        """
+        Insert data
+        :param item: Any
+        """
+        self.execute(INSERT_Q.format(item.title, item.url))
 
 
 # Declare variable of class DBConnector

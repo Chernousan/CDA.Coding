@@ -8,5 +8,6 @@ COPY enums.py enums.py
 COPY helpers.py helpers.py
 COPY http_srv.py http_srv.py
 COPY spider.py spider.py
+COPY pipeline.py pipeline.py
 WORKDIR /code/
 CMD ["python", "-u", "-m", "srv.app"]

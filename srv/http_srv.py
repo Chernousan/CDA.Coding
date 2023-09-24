@@ -49,6 +49,6 @@ class HttpServer(SimpleHTTPRequestHandler):
             table.append(TABLE_TEMPLATE.format(index=idx, title=item.title, url=item.url))
             idx += 1
 
-        result = [START_TEMPLATE.format(enc), *table, FINISH_TEMPLATE]
+        result = [START_TEMPLATE.format(enc=enc), *table, FINISH_TEMPLATE]
 
         return '\n'.join(result).encode(enc)

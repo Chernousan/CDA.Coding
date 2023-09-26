@@ -7,7 +7,7 @@
 import sys
 from http.server import SimpleHTTPRequestHandler
 from srv.data import db_instance
-from srv.enums import TABLE_TEMPLATE, FINISH_TEMPLATE, START_TEMPLATE
+from srv.enums import TABLE_TEMPLATE, HTML_TEMPLATE
 
 
 class HttpServer(SimpleHTTPRequestHandler):
@@ -22,33 +22,32 @@ class HttpServer(SimpleHTTPRequestHandler):
         # get encoding
         enc = sys.getfilesystemencoding()
 
-        response = db_instance.select()
-
-        html_file = self.get_html(response, enc)
+        # Get html file
+        html_file = self.get_html(enc)
 
         # Prepare response
         self.send_response(200)
         self.send_header('Content-type', f'text/html; charset={enc}')
         self.send_header('Content-Length', str(len(html_file)))
         self.end_headers()
+
         # send response
         self.wfile.write(bytes(html_file))
 
     @staticmethod
-    def get_html(data: list, enc: str) -> bytes:
+    def get_html(enc: str) -> bytes:
         """
         Generate html document depends on data from DB
         :param enc: str
         :param data: list
         :return: html document
         """
-        # convert db table into html table
-        table = []
-        idx = 1
-        for item in data:
-            table.append(TABLE_TEMPLATE.format(index=idx, title=item.title, url=item.url))
-            idx += 1
+        # Get data from db
+        table_raw = db_instance.select()
 
-        result = [START_TEMPLATE.format(enc=enc), *table, FINISH_TEMPLATE]
+        # convert data to html table
+        html_table = ''
+        for idx, item in enumerate(table_raw):
+            html_table += TABLE_TEMPLATE.format(index=idx, title=item.title, url=item.url)
 
-        return '\n'.join(result).encode(enc)
+        return HTML_TEMPLATE.format(enc=enc, table=html_table).encode(enc)

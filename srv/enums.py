@@ -26,9 +26,8 @@ INSERT_Q = "INSERT INTO estate (title, url) VALUES ( '{0}', '{1}');"
 
 # Templates for create HTML
 TABLE_TEMPLATE = '<tr><td>{index}</td><td>{title}</td><td><img src="{url}"></img></td></tr>'
-START_TEMPLATE = '<html><head><meta http-equiv="Content-Type" content="text/html; ' \
-                 'charset={enc}</head><body>"><table style="width:100%">'
-FINISH_TEMPLATE = '</table></body></html>'
+HTML_TEMPLATE = '<html><head><meta http-equiv="Content-Type" content="text/html; charset={enc}">' \
+                '</head><body><table style="width:100%">{table}</table></body></html>'
 
 # Scrapy variables.
 # Warning do not use huge value for SCRAP_DEPTH it affects the startup time of the application and

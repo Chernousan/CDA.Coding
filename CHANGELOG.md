@@ -1,5 +1,5 @@
 # Change Log
-## [0.0.2] Current 9_22_23
+## [0.0.3] Current 9_26_23
 Features:
 - fetch data using "requests"
 - store data to DB

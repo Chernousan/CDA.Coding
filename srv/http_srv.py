@@ -39,7 +39,6 @@ class HttpServer(SimpleHTTPRequestHandler):
         """
         Generate html document depends on data from DB
         :param enc: str
-        :param data: list
         :return: html document
         """
         # Get data from db

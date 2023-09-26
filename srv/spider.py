@@ -7,6 +7,7 @@
 import json
 from typing import Any
 import scrapy
+from scrapy.crawler import CrawlerProcess
 from scrapy.http import Response
 from srv.data import EstateClass
 from srv.enums import SCRAP_SRC, SCRAP_DEPTH
@@ -36,3 +37,12 @@ class ScrapSpider(scrapy.Spider):
         # Crete generator
         for item in data["_embedded"]["estates"]:
             yield EstateClass(item['name'], item['_links']['images'][0]['href'])
+
+
+def spider_run():
+    """
+    Start spider
+    """
+    process = CrawlerProcess({'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'})
+    process.crawl(ScrapSpider)
+    process.start()

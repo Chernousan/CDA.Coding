@@ -5,7 +5,7 @@
 #  Copyright (c) 2023
 
 import socketserver
-from srv.helpers import spider_run
+from srv.spider import spider_run
 from srv.data import db_instance
 from srv.enums import SRV_PORT
 from srv.http_srv import HttpServer
